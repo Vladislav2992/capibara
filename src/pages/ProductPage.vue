@@ -10,44 +10,46 @@ import FavoriteBtn from '@/components/FavoriteBtn.vue';
 import Title from '@/components/Title.vue';
 
 import { useCategoryStore } from '@/stores/category';
+import { storeToRefs } from 'pinia';
 
 const categoriesList = useCategoryStore()
-const { categories, fetchCategories } = categoriesList
+const { categoryTitle } = storeToRefs(categoriesList)
+const { fetchCategories } = categoriesList
 
 const params = useRoute()
 const productId = params.params.id
 const item = ref([])
 const price = ref(null)
-
 const fetchItem = async () => {
     try {
         const {data} = await axios(`${URL}/products?id=${productId}`)
+        console.log(data)
         return data[0]
     } catch (error) {
         console.log(error)
     }
 }
-const setItemValue = async () => {
-    item.value = await fetchItem()    
-    fetchCategories()
+const getItemValues = async () => {
+    item.value = await fetchItem() 
 
-    if (item.value.discount) {
-        price.value = computed(()=> item.value.price - (item.value.price * item.value.discount / 100))       
-    } else {
-        price.value = item.value.price
-    }   
+    item.value.discount
+    ? price.value = computed(()=> item.value.price - (item.value.price * item.value.discount / 100))       
+    : price.value = item.value.price
+     
+    await fetchCategories(item.value.category)  
 }
-setItemValue()
 
+getItemValues()
 
+   
 </script>
 
 <template>
     <Header />
     <div class="container">
-        <div class="breadcrumbs">
+        <div class="breadcrumbs ">
             <RouterLink to="/">Главная </RouterLink>
-            <RouterLink to="/">{{ categories }}</RouterLink>
+            <RouterLink to="/">{{ categoryTitle }}</RouterLink>
             <span>{{ item.title }}</span>
         </div>
     </div>
@@ -121,9 +123,9 @@ setItemValue()
 <style lang="sass" scoped>
 @import '@/assets/style/vars'
 .breadcrumbs 
+    @include line-clamp(1)
     display: flex
     gap: 5px
-    @include line-clamp(1)
     a 
         position: relative
         padding-right: 20px
