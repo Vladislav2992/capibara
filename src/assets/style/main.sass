@@ -1,0 +1,29 @@
+@tailwind base
+@tailwind components
+@tailwind utilities
+
+@import './vars'
+
+html 
+  scroll-behavior: smooth
+  scrollbar-gutter: stable
+
+body
+  font-family: 'Inter', sans-serif 
+  color: $main 
+  font-size: clamp(14px, 3vw, 16px)
+  overflow-x: clip
+  &.disabled 
+    overflow: hidden
+section 
+  margin-bottom: clamp(50px, 15vw, 160px)
+
+.container
+  max-width: 1440px
+  padding: 0 15px
+  margin: 0 auto
+
+.section__title
+  font-family: "Nunito", sans-serif
+  font-weight: 900
+  font-size: clamp(24px, 7vw, 54px)

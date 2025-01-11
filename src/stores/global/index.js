@@ -1,0 +1,1 @@
+export const URL = 'https://e48117a2260f96a7.mokky.dev';
