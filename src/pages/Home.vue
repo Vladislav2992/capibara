@@ -1,6 +1,5 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-
 import { useProductItems } from '@/stores/productItems'
 
 import Header from '@/components/Header/Header.vue';

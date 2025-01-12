@@ -1,16 +1,16 @@
 <script setup>
-import { useRoute, RouterLink } from 'vue-router';
-import { URL } from '@/stores/global';
-import axios from 'axios';
 import { computed, ref } from 'vue';
+import { useRoute, RouterLink } from 'vue-router';
+import axios from 'axios';
+
+import { URL } from '@/stores/global';
+import { useCategoryStore } from '@/stores/category';
+import { storeToRefs } from 'pinia';
 
 import Header from '@/components/Header/Header.vue';
 import Button from '@/components/Button.vue';
 import FavoriteBtn from '@/components/FavoriteBtn.vue';
 import Title from '@/components/Title.vue';
-
-import { useCategoryStore } from '@/stores/category';
-import { storeToRefs } from 'pinia';
 
 const categoriesList = useCategoryStore()
 const { categoryTitle } = storeToRefs(categoriesList)
@@ -20,10 +20,10 @@ const params = useRoute()
 const productId = params.params.id
 const item = ref([])
 const price = ref(null)
+
 const fetchItem = async () => {
     try {
         const {data} = await axios(`${URL}/products?id=${productId}`)
-        console.log(data)
         return data[0]
     } catch (error) {
         console.log(error)
@@ -40,8 +40,6 @@ const getItemValues = async () => {
 }
 
 getItemValues()
-
-   
 </script>
 
 <template>
@@ -50,7 +48,7 @@ getItemValues()
         <div class="breadcrumbs ">
             <RouterLink to="/">Главная </RouterLink>
             <RouterLink to="/">{{ categoryTitle }}</RouterLink>
-            <span>{{ item.title }}</span>
+            <span>{{ item.brand }} {{ item.model }}</span>
         </div>
     </div>
 
@@ -74,7 +72,7 @@ getItemValues()
                     </li>
                     <li class="">
                         <span>Категория</span>
-                        <div>{{ item.category }}</div>
+                        <div>{{ categoryTitle }}</div>
                     </li>
                     <li class="">
                         <span>Цвет</span>
@@ -97,10 +95,11 @@ getItemValues()
                     </svg>
                     4.8
                 </div>
-                <div class="flex gap-4">
+                <div class="flex gap-2">
                     <Button class="w-full">В корзину</Button>
                     <FavoriteBtn />
                 </div>
+                <Button class="w-full" color="accent">Купить в 1 клик</Button>
             </div>
         </div>
         <section class="col-[1_/_3]">
@@ -124,11 +123,10 @@ getItemValues()
 @import '@/assets/style/vars'
 .breadcrumbs 
     @include line-clamp(1)
-    display: flex
-    gap: 5px
     a 
         position: relative
         padding-right: 20px
+        margin-right: 10px
         &::after 
             content: ''
             position: absolute

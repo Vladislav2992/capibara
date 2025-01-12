@@ -9,7 +9,9 @@ defineProps({
 const isActive  = ref(true)
 </script>
 <template>
-    <button :class="{'long' : size === 'lg'}" ><slot></slot></button>
+    <button :class="{'long' : size === 'lg', 'accent' : color === 'accent'}" >
+        <slot></slot>
+    </button>
 </template>
 
 <style lang="sass" scoped>
@@ -31,4 +33,6 @@ button
     &.long 
         padding: 15px 20px
         font-size: clamp(18px, 4vw, 24px)
+    &.accent 
+        background: $accent 
 </style>

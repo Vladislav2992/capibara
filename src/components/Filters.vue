@@ -1,8 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { reactive, ref, watch, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import { useCategoryStore } from '@/stores/category';
+
 import FiltersCheckboxes from './FiltersCheckboxes.vue';
 import Range from './Range.vue';
 
@@ -10,7 +12,33 @@ defineProps({
     isFiltersOpen: Boolean
 })
 
-const emit = defineEmits(["openFilters"])
+const route = useRoute()
+const router = useRouter()
+
+const filters = reactive({
+    'category': route.query.category || '',
+    'price[from]': route.query.minPrice || '',
+    'price[to]': route.query.maxPrice || '',
+})
+watch(
+    () => filters,
+    (newFilters) => {
+        // Обновляем URL при изменении фильтров
+        console.log(newFilters)
+        router.push({ name: 'catalog', query: { ...newFilters } });
+    },
+    { deep: true }
+);
+watch(
+    () => route.query,
+    () => {
+        Object.assign(filters, route.query); // Обновляем локальные фильтры
+        
+    },
+    { immediate: true }
+);
+
+const emit = defineEmits(['openFilters'])
 
 const closeFilters = () => {
     emit('closeFilters')
@@ -82,20 +110,22 @@ onMounted(()=> {
             <button :class="{'active' : isCategoryOpen}" @click="isCategoryOpen = !isCategoryOpen">Категории </button>
             <ul :class="{'open' : isCategoryOpen}">
                 <li v-for="category in categories" :key="category.id">
-                    <button 
+                    <label 
                         :class="{ 'active': activeCategoryIndex == category.id }"
                         :data-active-index="category.id" 
+                        :for="`category-filter${category.id}`"
                         @click="setActiveIndex">
+                        <input type="radio" v-model="filters.category" :value="category.id" class="hidden" :id="`category-filter${category.id}`">
                        {{ category.title }}
-                    </button>
+                    </label>
                 </li>
             </ul>
         </div>
 
         <div class="price flex flex-col gap-2.5">
             <h3 class="font-bold">Цена</h3>              
-            <Range  :minPrice="0"
-                    :maxPrice="2000"
+            <Range  :min-price="0"
+                    :max-price="2000"
                     v-model="priceRange" />         
         </div>
         <FiltersCheckboxes title="Материал" :arr="materials" />

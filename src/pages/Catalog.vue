@@ -1,12 +1,17 @@
 <script setup>
+import { reactive, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+import { useProductItems } from '@/stores/productItems';
+import { storeToRefs } from 'pinia';
+
 import Header from '@/components/Header/Header.vue';
 import Filters from '@/components/Filters.vue';
 import Sort from '@/components/Sort.vue';
 import CatalogView from '@/components/CatalogView.vue';
 import CatalogProductItem from '@/components/CatalogProductItem.vue';
-import { ref } from 'vue';
-import { useProductItems } from '@/stores/productItems';
-import { storeToRefs } from 'pinia';
+
+
 
 const isFiltersOpen = ref(false)
 const closeFilters = () => {
@@ -26,13 +31,18 @@ const productStore = useProductItems()
 const { fetchItems } = productStore
 const { products, isLoading } = storeToRefs(productStore)
 
+
+const setSelectedCategory = (id) => {
+    selectedCategory.value = id
+    fetchItems(`?${selectedCategory.value ? '&category=' + selectedCategory.value : ''}`)
+}
 fetchItems()
 </script>
 
 <template>
     <Header />
     <div class="catalog-page container">
-        <Filters :isFiltersOpen="isFiltersOpen" @closeFilters="closeFilters"/>
+        <Filters :isFiltersOpen="isFiltersOpen" @closeFilters="closeFilters" @setSelectedCategory="setSelectedCategory"/>
         <div class="">
             <div class="flex items-center justify-between h-fit mb-10">
                 <Sort />

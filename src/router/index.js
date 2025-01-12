@@ -5,6 +5,9 @@ import Product from '@/pages/ProductPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -15,6 +18,7 @@ const router = createRouter({
       path: '/catalog',
       name: 'catalog',
       component: Catalog,
+      props: route => ({ query: route.query })
     },    
     {
       path: '/product/:id',
