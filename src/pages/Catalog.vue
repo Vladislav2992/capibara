@@ -1,17 +1,15 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
 
 import { useProductItems } from '@/stores/productItems';
 import { storeToRefs } from 'pinia';
 
 import Header from '@/components/Header/Header.vue';
 import Filters from '@/components/Filters.vue';
-import Sort from '@/components/Sort.vue';
-import CatalogView from '@/components/CatalogView.vue';
+import Sort from '@/components/ui/Sort.vue';
+import CatalogView from '@/components/ui/CatalogView.vue';
 import CatalogProductItem from '@/components/CatalogProductItem.vue';
-
-
+import Error from '@/components/ui/Error.vue';
 
 const isFiltersOpen = ref(false)
 const closeFilters = () => {
@@ -29,20 +27,17 @@ const changeView = () => {
 
 const productStore = useProductItems()
 const { fetchItems } = productStore
-const { products, isLoading } = storeToRefs(productStore)
+const { products, isLoading, isError } = storeToRefs(productStore)
 
-
-const setSelectedCategory = (id) => {
-    selectedCategory.value = id
-    fetchItems(`?${selectedCategory.value ? '&category=' + selectedCategory.value : ''}`)
-}
-fetchItems()
+onMounted( async ()=> {
+    await fetchItems()
+})
 </script>
 
 <template>
     <Header />
     <div class="catalog-page container">
-        <Filters :isFiltersOpen="isFiltersOpen" @closeFilters="closeFilters" @setSelectedCategory="setSelectedCategory"/>
+        <Filters :isFiltersOpen="isFiltersOpen" @closeFilters="closeFilters" />
         <div class="">
             <div class="flex items-center justify-between h-fit mb-10">
                 <Sort />
@@ -52,17 +47,14 @@ fetchItems()
                 </button>
                 <CatalogView @changeView="changeView" :isGallery="isGallery" />
             </div>
-            <div :class="['items-wrapper', {'gallery' : isGallery}]">
-                <CatalogProductItem v-for="product in products" 
+            <div v-if="isError">
+                <Error />
+            </div>
+            <div v-else :class="['items-wrapper', {'gallery' : isGallery}]">
+                <CatalogProductItem v-for="product in products"
                     :key="product.id"
-                    :id="product.id"
-                    :title="product.title" 
-                    :imageUrl="product.image"
-                    :price="product.price" 
-                    :discount="product.discount"
-                    :description="product.description"
+                    :product="product"
                     :isGallery="isGallery" />
-
             </div>
         </div>
     </div>

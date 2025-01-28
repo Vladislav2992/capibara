@@ -5,8 +5,8 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { useCategoryStore } from '@/stores/category';
 
-import FiltersCheckboxes from './FiltersCheckboxes.vue';
-import Range from './Range.vue';
+import FiltersCheckboxes from './ui/FiltersCheckboxes.vue';
+import Range from './ui/Range.vue';
 
 defineProps({
     isFiltersOpen: Boolean
@@ -16,9 +16,10 @@ const route = useRoute()
 const router = useRouter()
 
 const filters = reactive({
-    'category': route.query.category || '',
-    'price[from]': route.query.minPrice || '',
-    'price[to]': route.query.maxPrice || '',
+    'category': '',
+    // 'category': route.query.category || '',
+    // 'price[from]': route.query.minPrice || '',
+    // 'price[to]': route.query.maxPrice || '',
 })
 watch(
     () => filters,
@@ -44,9 +45,9 @@ const closeFilters = () => {
     emit('closeFilters')
 }
 
-const store = useCategoryStore()
-const {fetchCategories} = store 
-const {categories} = storeToRefs(store)
+const categoryStore = useCategoryStore()
+const {fetchCategories} = categoryStore 
+const {categories} = storeToRefs(categoryStore)
 
 const isCategoryOpen = ref(true)
 const activeCategoryIndex = ref(0)

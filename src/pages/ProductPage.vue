@@ -1,45 +1,62 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
-import axios from 'axios';
 
-import { URL } from '@/stores/global';
 import { useCategoryStore } from '@/stores/category';
 import { storeToRefs } from 'pinia';
 
 import Header from '@/components/Header/Header.vue';
-import Button from '@/components/Button.vue';
-import FavoriteBtn from '@/components/FavoriteBtn.vue';
-import Title from '@/components/Title.vue';
+import Button from '@/components/ui/Button.vue';
+import FavoriteBtn from '@/components/ui/FavoriteBtn.vue';
+import Title from '@/components/ui/Title.vue';
+import Error from '@/components/ui/Error.vue';
+import { useProductItems } from '@/stores/productItems';
+import { useFavoritesStore } from '@/stores/favorites';
+import { useOrderStore } from '@/stores/order';
+
 
 const categoriesList = useCategoryStore()
 const { categoryTitle } = storeToRefs(categoriesList)
 const { fetchCategories } = categoriesList
+const isAdded = ref(false)
 
 const params = useRoute()
 const productId = params.params.id
 const item = ref([])
 const price = ref(null)
 
-const fetchItem = async () => {
-    try {
-        const {data} = await axios(`${URL}/products?id=${productId}`)
-        return data[0]
-    } catch (error) {
-        console.log(error)
-    }
-}
-const getItemValues = async () => {
-    item.value = await fetchItem() 
+const productStore = useProductItems()
+const {products, isError} = storeToRefs(productStore)
+const { fetchItems } = productStore
 
+const favoritesStore = useFavoritesStore()
+const { fetchFavorites } = favoritesStore
+const { favorotesIdsList } = storeToRefs(favoritesStore)
+
+const orderStore = useOrderStore()
+const { addToOrder } = orderStore;
+const { orderIdsList } = storeToRefs(orderStore)
+
+onMounted(async ()=> {
+    await fetchItems(`?id=${productId}`)
+    item.value = products.value[0]
     item.value.discount
     ? price.value = computed(()=> item.value.price - (item.value.price * item.value.discount / 100))       
     : price.value = item.value.price
-     
-    await fetchCategories(item.value.category)  
-}
+    await fetchCategories(item.value.category) 
+    await fetchFavorites() 
+    favorotesIdsList.value.find(el => {
+        el === item.value.productId 
+        ? item.value.isFavorite = true 
+        : false
+    })    
+    orderIdsList.value.find(el => {
+        el === item.value.productId 
+        ? item.value.isAdded = true 
+        : false
+    })    
+})
 
-getItemValues()
 </script>
 
 <template>
@@ -52,7 +69,11 @@ getItemValues()
         </div>
     </div>
 
-    <div class="container product">
+    <div class="" v-if="isError">
+        <Error />
+    </div>
+
+    <div v-else class="container product">
         <div class="">
             <!-- slider -->
             <img loading="lazy" :src="item.image" :alt="item.title">
@@ -62,22 +83,10 @@ getItemValues()
                 <h1 class="font-bold mb-5">{{ item.title }}</h1>
 
                 <ul class="characteristics mb-10">
-                    <li class="">
-                        <span>Бренд</span>
-                        <div>{{ item.brand }}</div>
-                    </li>
-                    <li class="">
-                        <span>Модель</span>
-                        <div>{{ item.model }}</div>
-                    </li>
-                    <li class="">
-                        <span>Категория</span>
-                        <div>{{ categoryTitle }}</div>
-                    </li>
-                    <li class="">
-                        <span>Цвет</span>
-                        <div>{{ item.color }}</div>
-                    </li>
+                    <li class=""><span>Бренд</span><div>{{ item.brand }}</div></li>
+                    <li class=""><span>Модель</span><div>{{ item.model }}</div></li>
+                    <li class=""><span>Категория</span><div>{{ categoryTitle }}</div></li>
+                    <li class=""><span>Цвет</span><div>{{ item.color }}</div></li>
                 </ul>
 
                 <div class="">{{ item.description }}</div>
@@ -96,8 +105,8 @@ getItemValues()
                     4.8
                 </div>
                 <div class="flex gap-2">
-                    <Button class="w-full">В корзину</Button>
-                    <FavoriteBtn />
+                    <Button @click="addToOrder(item)" :class="['w-full', {'added' : item.isAdded}]" :disabled="item.isAdded">{{item.isAdded ? 'Добавлено' : 'В корзину'}}</Button>
+                    <FavoriteBtn :product="item"/>
                 </div>
                 <Button class="w-full" color="accent">Купить в 1 клик</Button>
             </div>
@@ -180,4 +189,6 @@ getItemValues()
     text-decoration: line-through
     font-size: 16px
     color: $gray
+.added
+    background: $gray
 </style>

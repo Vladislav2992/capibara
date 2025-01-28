@@ -1,30 +1,32 @@
 <script setup>
-import FavoriteBtn from './FavoriteBtn.vue';
-import Button from './Button.vue';
+import FavoriteBtn from './ui/FavoriteBtn.vue';
+import Button from './ui/Button.vue';
 import { RouterLink } from 'vue-router';
+import { useOrderStore } from '@/stores/order';
+import { watch } from 'vue';
 
-defineProps({
-    id: Number,
-    title: String,
-    imageUrl: String,
-    price: Number,
-    discount: Number,
-    description: String,
+const props = defineProps({
+    product: Object,
     isGallery: Boolean
 })
+
+const orderStore = useOrderStore()
+const { addToOrder, fetchSelectedItems } = orderStore
+
+// watch(()=> addToOrder, ()=>fetchSelectedItems())
 
 </script>
 <template>
     <div :class="['card relative', {'full-width': !isGallery}]">
-        <RouterLink :to="`/product/${id}`" class="flex flex-col gap-3">
-            <FavoriteBtn class="absolute top-4 right-4 z-[2]" />
+        <RouterLink :to="`/product/${product.productId}`" class="flex flex-col gap-3">
+            <FavoriteBtn :product="product" class="absolute top-4 right-4 z-[2]" />
             <div class="img">
-                <img loading="lazy" :src="imageUrl" :alt="title">
+                <img loading="lazy" :src="product.image" :alt="product.title" width="215" height="215">
             </div>
            <div class="card-info">
-            <p class="price font-bold">${{ price }}</p>
-            <p class="title">{{ title }}</p>
-            <div v-if="!isGallery" class="description">{{ description }}</div>
+            <p class="price font-bold">${{ product.price }}</p>
+            <p class="title">{{ product.title }}</p>
+            <div v-if="!isGallery" class="description">{{ product.description }}</div>
            </div>
             <div class="card-bottom flex justify-between mt-auto gap-4">
                 <div class="star flex items-center gap-2">
@@ -35,7 +37,14 @@ defineProps({
                     </svg>
                     4.8
                 </div>
-                <Button @click.prevent class="flex gap-1"><span class="hidden sm:block">+</span> Добавить</Button>
+                <Button @click.prevent="addToOrder(product)" class="flex gap-1" :disabled="product.isAdded">
+                    <template v-if="!product.isAdded">
+                        <span class="hidden sm:block">+</span> Добавить
+                    </template>
+                    <template v-else>
+                        Добавлено
+                    </template>
+                </Button>                
             </div>
         </RouterLink>
     </div>

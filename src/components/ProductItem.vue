@@ -1,35 +1,29 @@
 <script setup>
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
-import Button from './Button.vue';
-import FavoriteBtn from './FavoriteBtn.vue';
+import Button from './ui/Button.vue';
+import FavoriteBtn from './ui/FavoriteBtn.vue';
 const props = defineProps({
-    id: Number,
-    title:String,
-    image: String,
-    description: String,
-    price: Number,
-    discountPrice: Number,
-    stars: Number,
+    product: Object
 })
 
-const priceWithDiscount = computed(()=> (props.price - props.price * props.discountPrice / 100 ).toFixed(2))
+const priceWithDiscount = computed(()=> (props.product.price - props.product.price * props.product.discount / 100 ).toFixed(2))
 </script>
 
 <template>
     <div class="card">
         <div class="img-wrapper">
-            <FavoriteBtn class="absolute top-0 right-0" />
-            <span class="discont" v-if="discountPrice">-{{ discountPrice }}%</span>
-            <RouterLink :to="`/product/${id}`"><img :src=image :alt="title"></RouterLink>
+            <FavoriteBtn :product="product" class="absolute top-0 right-0" />
+            <span class="discont" v-if="product.discount">-{{ product.discount }}%</span>
+            <RouterLink :to="`/product/${product.productId}`"><img :src=product.image :alt="product.title" height="240"></RouterLink>
         </div>
 
-        <h3><RouterLink :to="`/product/${id}`">{{ title }}</RouterLink></h3>
+        <h3><RouterLink :to="`/product/${product.productId}`">{{ product.title }}</RouterLink></h3>
 
-        <p class="description">{{ description }}</p>
+        <p class="description">{{ product.description }}</p>
         <div class="flex sm:items-center sm:gap-3 mt-auto flex-col sm:flex-row">
-            <span class="price" >${{ discountPrice ? priceWithDiscount : price }}</span>
-            <span class="text-xs text-gray-400 line-through" v-if="discountPrice">${{ price }}</span>
+            <span class="price" >${{ product.discount ? priceWithDiscount : product.price }}</span>
+            <span class="text-xs text-gray-400 line-through" v-if="product.discount">${{ product.price }}</span>
 
             <!-- stars -->
             <div class="ml-auto flex items-center gap-2 leading-1">
@@ -64,12 +58,11 @@ const priceWithDiscount = computed(()=> (props.price - props.price * props.disco
 .img-wrapper 
     width: 100%
     height: 240px
-    border-radius: 15px 
     overflow: hidden
     position: relative
     img 
         width: 100%
-        height: auto
+        height: 100%
         object-fit: contain 
         object-position: center
     @media (max-width: 540px)
