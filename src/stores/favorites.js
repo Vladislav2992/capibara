@@ -57,16 +57,15 @@ export const useFavoritesStore = defineStore("favorites", () => {
     try {
       await fetchSelected();
       const selectedItem = selected.value.find(el => el.productId === product.productId)
-      if (selectedItem) product = selectedItem;      
-           
-      if (!product.isAdded && !product.isFavorite) {
+      if (selectedItem) product.id = selectedItem.id;      
+      
+      product.isFavorite = false
+      if (!product.isAdded  && !product.isFavorite) {
         await removeFromSelected(product) 
       } else {
         await axios.patch(`${URL}/selected/${product.id}`, {isFavorite: false});
       }
-      product.isFavorite = false 
-      await fetchFavorites()
-      console.log(product.isFavorite)
+      await updateFavoritesList()
     } catch (error) {
       console.log(error);
     } finally {

@@ -61,8 +61,9 @@ export const useOrderStore = defineStore("order", () => {
   const removeFromOrder = async (product) => {
     try {
       product.isAdded = false;      
-      if (product.isAdded === false && product.isFavorite === false) {
+      if (!product.isAdded && !product.isFavorite) {
         await removeFromSelected(product) 
+        console.log('removed')
       } else {
         await axios.patch(`${URL}/selected/${product.id}`, {
           isAdded: false,
