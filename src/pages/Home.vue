@@ -38,7 +38,7 @@ onMounted(async ()=> {
   <main>
     <section>
       <div class="container">
-        <Banner />
+        <!-- <Banner /> -->
       </div>
     </section>
 

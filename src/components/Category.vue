@@ -86,11 +86,9 @@ onMounted(async () => {
     box-shadow: $shadow
     overflow: hidden
     transition: scale $transition
-    &:hover 
-        scale: 1.03
-    @media(max-width: 990px) 
+    @media (hover: hover )
         &:hover 
-            scale: 1
+            scale: 1.03   
 @keyframes pulse 
     0% 
         background: #EEEEEE

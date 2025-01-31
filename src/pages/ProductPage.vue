@@ -18,7 +18,6 @@ import { useOrderStore } from '@/stores/order';
 const categoriesList = useCategoryStore()
 const { categoryTitle } = storeToRefs(categoriesList)
 const { fetchCategories } = categoriesList
-const isAdded = ref(false)
 
 const params = useRoute()
 const productId = params.params.id
@@ -31,7 +30,7 @@ const { fetchItems } = productStore
 
 const favoritesStore = useFavoritesStore()
 const { fetchFavorites } = favoritesStore
-const { favorotesIdsList } = storeToRefs(favoritesStore)
+const { favorotesList } = storeToRefs(favoritesStore)
 
 const orderStore = useOrderStore()
 const { addToOrder } = orderStore;
@@ -45,8 +44,8 @@ onMounted(async ()=> {
     : price.value = item.value.price
     await fetchCategories(item.value.category) 
     await fetchFavorites() 
-    favorotesIdsList.value.find(el => {
-        el === item.value.productId 
+    favorotesList.value.find(el => {
+        el.productId === item.value.productId 
         ? item.value.isFavorite = true 
         : false
     })    

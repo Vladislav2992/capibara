@@ -28,8 +28,9 @@ button
     font-weight: 700
     transition: background $transition
     height: fit-content
-    &:hover 
-        background: $green-light
+    @media (hover: hover )
+        &:hover 
+            background: $green-light
     &:active
         transform: translateY(1px)
     &.long 

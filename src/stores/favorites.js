@@ -1,26 +1,25 @@
 import axios from "axios";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { ref } from "vue";
 import { URL } from "./global";
+import { useSelectedStore } from "./selected"
 
 export const useFavoritesStore = defineStore("favorites", () => {
   const favorites = ref([]);
-  const favorotesIdsList = ref([])
+  const favorotesList = ref([])
   const isLoading = ref(true);
   const isError = ref(false)
-  const allSelectedItems = ref([])
   
-  const fetchSelectedItems = async () => {
-    const { data } = await axios(`${URL}/selected`)
-    allSelectedItems.value = data
-  }
+   const selectedStore = useSelectedStore()
+   const { fetchSelected, removeFromSelected } = selectedStore
+   const { selected } = storeToRefs(selectedStore)
 
   const fetchFavorites = async () => {
     isLoading.value = true;
     try {
-      const { data } = await axios(`${URL}/selected?isFavorite=true`);
-      favorites.value = data;
-      favorotesIdsList.value = favorites.value.map(item => item = item.productId)
+      await fetchSelected();
+      favorites.value = selected.value.filter(item => item.isFavorite); 
+      updateFavoritesList();     
       isLoading.value = false;
     } catch (error) {
       console.log(error);
@@ -29,19 +28,18 @@ export const useFavoritesStore = defineStore("favorites", () => {
       isLoading.value = false;
     }
   };
+
   const addToFavorite = async (product) => {
     try {
-      await fetchSelectedItems();
-
-      const selectedItem = allSelectedItems.value.find(item => item.productId === product.productId)
-
+      await fetchSelected();
+      const selectedItem = selected.value.find(item => item.productId === product.productId)     
+      product.isFavorite = true
       if (selectedItem) {
         await axios.patch(`${URL}/selected/${selectedItem.id}`, {isFavorite: true});
       } else {
-        product.isFavorite = true;
         await axios.post(`${URL}/selected/`, product);
-      }  
-      await fetchFavorites();    
+      }
+      await updateFavoritesList()
       isLoading.value = false;
     } catch (error) {
       console.log(error);
@@ -49,11 +47,26 @@ export const useFavoritesStore = defineStore("favorites", () => {
       isLoading.value = false;
     }
   };
+
+  const updateFavoritesList = async () => {
+    await fetchSelected()
+    favorotesList.value = selected.value.filter(item => item.isFavorite)
+  }
+
   const removeFromFavorites = async (product) => {
     try {
-      product.isFavorite = false;
-      await axios.patch(`${URL}/selected/${product.id}`, {isFavorite: false});
-      await fetchFavorites();
+      await fetchSelected();
+      const selectedItem = selected.value.find(el => el.productId === product.productId)
+      if (selectedItem) product = selectedItem;      
+           
+      if (!product.isAdded && !product.isFavorite) {
+        await removeFromSelected(product) 
+      } else {
+        await axios.patch(`${URL}/selected/${product.id}`, {isFavorite: false});
+      }
+      product.isFavorite = false 
+      await fetchFavorites()
+      console.log(product.isFavorite)
     } catch (error) {
       console.log(error);
     } finally {
@@ -64,7 +77,7 @@ export const useFavoritesStore = defineStore("favorites", () => {
     favorites,
     isLoading,
     isError,
-    favorotesIdsList,
+    favorotesList,
     fetchFavorites,
     addToFavorite,
     removeFromFavorites,

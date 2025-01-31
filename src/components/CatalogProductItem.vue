@@ -3,7 +3,6 @@ import FavoriteBtn from './ui/FavoriteBtn.vue';
 import Button from './ui/Button.vue';
 import { RouterLink } from 'vue-router';
 import { useOrderStore } from '@/stores/order';
-import { watch } from 'vue';
 
 const props = defineProps({
     product: Object,
@@ -11,9 +10,7 @@ const props = defineProps({
 })
 
 const orderStore = useOrderStore()
-const { addToOrder, fetchSelectedItems } = orderStore
-
-// watch(()=> addToOrder, ()=>fetchSelectedItems())
+const { addToOrder } = orderStore
 
 </script>
 <template>
@@ -53,6 +50,9 @@ const { addToOrder, fetchSelectedItems } = orderStore
 @import '@/assets/style/vars'
 img
     min-height: 180px
+    object-fit: cover 
+    object-position: center
+    width: 100%
     @media(max-width: 750px) 
         min-height: auto
 
@@ -60,8 +60,9 @@ img
     padding: 10px 15px 25px
     border-radius: $rounded
     transition: box-shadow $transition
-    &:hover 
-        box-shadow: $shadow 
+    @media (hover: hover )
+        &:hover 
+            box-shadow: $shadow 
     @media(max-width: 540px)
         padding: 0 
     &.full-width

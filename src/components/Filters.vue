@@ -7,7 +7,7 @@ import { useCategoryStore } from '@/stores/category';
 
 import FiltersCheckboxes from './ui/FiltersCheckboxes.vue';
 import Range from './ui/Range.vue';
-
+import RangTest from './ui/RangTest.vue';
 defineProps({
     isFiltersOpen: Boolean
 })
@@ -25,7 +25,7 @@ watch(
     () => filters,
     (newFilters) => {
         // Обновляем URL при изменении фильтров
-        console.log(newFilters)
+        // console.log(newFilters)
         router.push({ name: 'catalog', query: { ...newFilters } });
     },
     { deep: true }
@@ -98,6 +98,8 @@ const priceRange = ref({ min: 0, max: 2000 })
 onMounted(()=> {
     fetchCategories();
 })
+
+const rangeProperty = ref([10, 90])
 </script>
 
 <template>
@@ -125,9 +127,10 @@ onMounted(()=> {
 
         <div class="price flex flex-col gap-2.5">
             <h3 class="font-bold">Цена</h3>              
-            <Range  :min-price="0"
+            <!-- <Range  :min-price="0"
                     :max-price="2000"
-                    v-model="priceRange" />         
+                    v-model="priceRange" />    -->
+            <RangTest :value="rangeProperty" />      
         </div>
         <FiltersCheckboxes title="Материал" :arr="materials" />
         

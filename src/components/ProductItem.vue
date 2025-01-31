@@ -47,11 +47,9 @@ const priceWithDiscount = computed(()=> (props.product.price - props.product.pri
     flex-direction: column
     gap: 15px
     transition: scale $transition
-    &:hover 
-        scale: 1.03
-    @media (max-width: 990px)
+    @media (hover: hover )
         &:hover 
-            scale: 1
+            scale: 1.03  
     @media (max-width: 540px)
         gap: 8px
 
@@ -78,11 +76,11 @@ h3,
     
 .discont 
     position: absolute
-    padding: 20px
+    padding: 5px 10px
     display: flex
     justify-content: center
     align-items: center
-    border-radius: 50%
+    border-radius: 8px
     background: $accent
     color: $white
 </style>

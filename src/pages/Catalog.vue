@@ -10,6 +10,9 @@ import Sort from '@/components/ui/Sort.vue';
 import CatalogView from '@/components/ui/CatalogView.vue';
 import CatalogProductItem from '@/components/CatalogProductItem.vue';
 import Error from '@/components/ui/Error.vue';
+import { useSelectedStore } from '@/stores/selected';
+
+const items = ref([])
 
 const isFiltersOpen = ref(false)
 const closeFilters = () => {
@@ -29,8 +32,17 @@ const productStore = useProductItems()
 const { fetchItems } = productStore
 const { products, isLoading, isError } = storeToRefs(productStore)
 
+const selectedStore = useSelectedStore();
+const { fetchSelected } = selectedStore;
+const { selected } = storeToRefs(selectedStore);
+
 onMounted( async ()=> {
     await fetchItems()
+    await fetchSelected() 
+    items.value = products.value.map(product => {
+    const selectedProduct = selected.value.find(sel => sel.productId === product.productId);
+    return selectedProduct ? selectedProduct : product;
+});
 })
 </script>
 
@@ -51,9 +63,9 @@ onMounted( async ()=> {
                 <Error />
             </div>
             <div v-else :class="['items-wrapper', {'gallery' : isGallery}]">
-                <CatalogProductItem v-for="product in products"
-                    :key="product.id"
-                    :product="product"
+                <CatalogProductItem v-for="item in items"
+                    :key="item.productId"
+                    :product="item"
                     :isGallery="isGallery" />
             </div>
         </div>

@@ -43,7 +43,7 @@ const removeFromCart = async () => {
             animation: scale .3s 
 @keyframes scale 
     0% 
-        transform: scale(0)
+        transform: scale(.8)    
     100%
         transform: scale(1)
 </style>

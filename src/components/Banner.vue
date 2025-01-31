@@ -1,9 +1,10 @@
 <script setup>
 import Button from '@/components/ui/Button.vue'
+// autoplay-delay="5000"
 </script>
 
 <template>
-    <swiper-container loop="true" autoplay-delay="5000" speed="1000" pagination="true" space-between="10" >
+    <swiper-container loop="true"  speed="1000" pagination="true" space-between="10" >
         <swiper-slide class="slide-gradient grid grid-cols-2 py-[clamp(12px,_5vw,_48px)] px-4 gap-5 rounded-30">
             <div class="flex items-center justify-center lg:row-[1_/_3]">
                 <img src="@/assets/img/main-banner.png" alt="" class="">

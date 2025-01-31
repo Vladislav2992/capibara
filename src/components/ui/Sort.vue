@@ -2,10 +2,10 @@
 import { onMounted, ref } from 'vue';
 
 const sortBy = [
-    'дешевле',
-    'дороже',
-    'по дате',
-    'по размеру скидки',
+    'По возрастанию цены',
+    'По убыванию цены',
+    'По рейтингу',
+    'По размеру скидки',
 ]
 
 const isSortOpen = ref(false)
@@ -44,7 +44,7 @@ onMounted(() => {
                     </clipPath>
                 </defs>
             </svg>
-            <span class="text-accent">Сначала: </span>
+            <!-- <span class="text-accent">Сначала: </span>  -->
             <span>{{ sortValue }}</span>
         </button>
         <ul :class="['inner', {'opened' : isSortOpen}]">
@@ -69,7 +69,7 @@ onMounted(() => {
     box-shadow: $shadow
     border-radius: 15px
     top: calc(100% + 10px)
-    right: 0
+    left: 0
     max-height: 0
     transition: max-height $transition, padding $transition
     overflow: hidden
@@ -85,8 +85,9 @@ button:not(.sort-btn)
     padding: 8px 15px
     cursor: pointer
     transition: background $transition
-    &:hover 
-        background: #d5d5d5   
+    @media (hover: hover )
+        &:hover 
+            background: #d5d5d5   
     &.active 
         background: #d5d5d5
 </style>

@@ -43,7 +43,7 @@ svg.active
         stroke: $accent
 @keyframes scale 
     0% 
-        transform: scale(0)
+        transform: scale(0.9)
     100%
         transform: scale(1)
 </style>
